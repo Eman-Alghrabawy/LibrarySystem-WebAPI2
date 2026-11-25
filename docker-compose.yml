@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "YourStrongPassword123"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: LibrarySystem/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultSqlConnection: "Server=db;Database=LibrarySystem;User Id=sa;Password=YourStrongPassword123;TrustServerCertificate=true;"
+      ConnectionStrings__AuthenticationConnection: "Server=db;Database=LibrarySystem_Auth;User Id=sa;Password=YourStrongPassword123;TrustServerCertificate=true;"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sqlserver-data:

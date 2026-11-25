@@ -1,0 +1,27 @@
+@LibrarySystem_HostAddress = http://localhost:5132
+
+### Register, then copy the token returned by Login and send it as: Authorization: Bearer <token>
+
+POST {{LibrarySystem_HostAddress}}/api/Account/register
+Content-Type: application/json
+
+{
+  "fullName": "Emma",
+  "email": "emma@example.com",
+  "password": "Emma@123"
+}
+
+###
+
+POST {{LibrarySystem_HostAddress}}/api/Account/login
+Content-Type: application/json
+
+{
+  "email": "emma@example.com",
+  "password": "Emma@123"
+}
+
+###
+
+GET {{LibrarySystem_HostAddress}}/api/Books/get-all
+Accept: application/json
